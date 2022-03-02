@@ -67,7 +67,9 @@ class Wheel:
         position = self.pos.get_p()
         if position[0] + self.radius > WIDTH: #wrap r -> l
             self.pos = Vector(0 + self.radius, position[1])
-            self.wrapped = True         
+            self.wrapped = True
+        elif position[0] + self.radius < 0:
+            self.vel.multiply(-5)
         else:
             self.wrapped = False
 
@@ -129,80 +131,6 @@ class Keyboard:
 
 
 
-class Interaction:
-
-    def __init__(self, wheel, keyboard, menu):
-        self.wheel = wheel
-        self.keyboard = keyboard
-        self.menu = menu
-        self.collision = False
-        self.circles = []
-        self.projectiles = []
-       
-
-    def update(self):
-        if menu.active == False:
-            if self.keyboard.right:
-                self.wheel.vel.add(Vector(1, 0))
-                self.wheel.clockwise = True
-            elif self.keyboard.left:
-                self.wheel.vel.add(Vector(-1,0))
-                self.wheel.clockwise = False
-            elif self.keyboard.space:
-                if self.wheel.ground_check() == True:
-                    self.keyboard.space = False
-                    self.wheel.vel.add(Vector(0,-30))
-
-                self.wheel.clockwise = None
-
-            else:
-                self.wheel.clockwise = None
-
-            for circle in self.circles:
-                  if circle.hit(wheel) == True:
-                        if not self.collision:
-                            wheel.take_damage()
-                            normal = circle.normal(wheel)
-                            self.wheel.bounce(normal) 
-                            self.collision = True
-                        else:
-                            self.collision = False
-            if wheel.wrapped == True:
-               self.circles = []
-               self.generate()
-               self.projectiles = []       
-            if wheel.dead == True:
-               menu.scores.append(wheel.distance)
-               self.circles = []
-               menu.set_active()    
-        elif menu.active == True:
-           if self.keyboard.p:
-               wheel.reset_wheel()
-               self.generate()
-               menu.set_inactive()
-           elif self.keyboard.q:
-               quit()
-            
-                      
-    def generate(self):
-        xprev = 60
-        amount = random.randint(5,10)
-        for i in range(0, amount):
-           x = xprev + random.randint(70,200)
-           radius = 5 
-           y = HEIGHT - radius
-           i = circle(Vector(x,y),radius,7,"red")
-           self.circles.append(i)
-           xprev = x
-            
-    def spawn_proj(self):
-        amount = random.randint(1,5)
-        for i in range (0, amount):
-            y = random.randint(50, HEIGHT)
-            radius = 5
-            x = WIDTH + 5
-            i = circle(Vector(x,y),radius,7,"blue")
-            self.projectiles.append(i)
           
                      
 class Menu:
@@ -246,6 +174,80 @@ class circle:
         perpendicular = self.pos.copy().subtract(ball.pos)
         return perpendicular.normalize()
     
+class Interaction:
+
+    def __init__(self, wheel, keyboard, menu):
+        self.wheel = wheel
+        self.keyboard = keyboard
+        self.menu = menu
+        self.collision = False
+        self.circles = []
+        self.projectiles = []
+       
+
+    def update(self):
+        if menu.active == False:
+            if self.keyboard.right:
+                self.wheel.vel.add(Vector(1, 0))
+                self.wheel.clockwise = True
+            elif self.keyboard.left:
+                self.wheel.vel.add(Vector(-1,0))
+                self.wheel.clockwise = False
+            elif self.keyboard.space:
+                if self.wheel.ground_check() == True:
+                    self.keyboard.space = False
+                    self.wheel.vel.add(Vector(0,-30))
+
+                self.wheel.clockwise = None
+                
+            else:
+                self.wheel.clockwise = None
+            for circle in self.circles:
+                  if circle.hit(wheel) == True:
+                        if not self.collision:
+                            wheel.take_damage()
+                            normal = circle.normal(wheel)
+                            self.wheel.bounce(normal) 
+                            self.collision = True
+                        else:
+                            self.collision = False
+            if wheel.wrapped == True:
+               self.circles = []
+               self.generate()
+               self.projectiles = []       
+            if wheel.dead == True:
+               menu.scores.append(wheel.distance)
+               self.circles = []
+               menu.set_active()    
+        elif menu.active == True:
+           if self.keyboard.p:
+               wheel.reset_wheel()
+               self.generate()
+               menu.set_inactive()
+           elif self.keyboard.q:
+               quit()
+           
+                      
+    def generate(self):
+        xprev = 60
+        amount = random.randint(5,10)
+        for i in range(0, amount):
+           x = xprev + random.randint(70,200)
+           radius = 5 
+           y = HEIGHT - radius
+           i = circle(Vector(x,y),radius,7,"red")
+           self.circles.append(i)
+           xprev = x
+            
+    def spawn_proj(self):
+        amount = random.randint(1,5)
+        for i in range (0, amount):
+            y = random.randint(50, HEIGHT)
+            radius = 5
+            x = WIDTH + 5
+            i = circle(Vector(x,y),radius,7,"blue")
+            self.projectiles.append(i)    
+    
         
     
          
@@ -268,9 +270,8 @@ def draw(canvas):
         menu.draw(canvas)
     
 frame = simplegui.create_frame('Interactions', WIDTH, HEIGHT)
-frame.set_canvas_background('#31CAF3')
 frame.set_draw_handler(draw)
+frame.set_canvas_background('#31CAF3')
 frame.set_keydown_handler(kbd.keyDown)
 frame.set_keyup_handler(kbd.keyUp)
 frame.start()
-
