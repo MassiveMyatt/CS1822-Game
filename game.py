@@ -1,4 +1,5 @@
 from user304_rsf8mD0BOQ_1 import Vector
+
 try:
     import simplegui
 except ImportError:
@@ -20,7 +21,7 @@ class Wheel:
         self.vel = Vector()
         self.radius = max(radius, 10)
         self.colour = 'White'
-        self.img = simplegui.load_image('https://freesvg.org/img/8-Bit-Character-1.png')
+        self.img = simplegui.load_image("https://freesvg.org/img/8-Bit-sprite.png-1.png")
         self.img_centre = (256, 256)
         self.img_dims = (512,512)
         self.img_dest_dim = (128, 128)
