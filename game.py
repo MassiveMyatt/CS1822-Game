@@ -18,11 +18,7 @@ SHEET_WIDTH = 1440
 SHEET_HEIGHT = 1480
 COLUMNS = 6
 ROWS = 5
-<<<<<<< HEAD
 SHEET_URL = "https://i.imgur.com/GQy2YrF.png"
-=======
-SHEET_URL = "https://www.cs.rhul.ac.uk/courses/CS1830/sprites/runnerSheet.png"
->>>>>>> c8ae473a3a1edb3105f5991e09fed2186ce27411
 time = 1
 
 class Wheel:
